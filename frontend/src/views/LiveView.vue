@@ -57,6 +57,47 @@
       </div>
     </div>
 
+    <div class="card" style="margin-top:20px">
+      <h3 class="section-title">
+        Automatización
+        <span v-if="autoLoading" class="spinner-inline"></span>
+      </h3>
+      <div class="auto-actions">
+        <button class="btn btn-outline" @click="fetchNewResults" :disabled="autoLoading">
+          🔄 Actualizar Resultados (scraping)
+        </button>
+        <button class="btn btn-outline" @click="recalibrateBias" :disabled="autoLoading">
+          ⚖️ Recalibrar Sesgo
+        </button>
+      </div>
+      <div v-if="biasStatus" class="bias-info">
+        <div class="bias-row">
+          <span class="bias-label">Resultados rastreados:</span>
+          <span class="bias-value">{{ biasStatus.total_tracked }}</span>
+        </div>
+        <div class="bias-row">
+          <span class="bias-label">Pesos ensemble:</span>
+          <span class="bias-value">
+            DC={{ (biasStatus.ensemble_weights?.dixon_coles * 100).toFixed(0) }}%
+            XGB={{ (biasStatus.ensemble_weights?.xgboost * 100).toFixed(0) }}%
+            Elo={{ (biasStatus.ensemble_weights?.elo * 100).toFixed(0) }}%
+          </span>
+        </div>
+        <div class="bias-row">
+          <span class="bias-label">Accuracy DC:</span>
+          <span class="bias-value">{{ (biasStatus.model_performance?.dixon_coles?.accuracy * 100).toFixed(1) }}%</span>
+        </div>
+        <div class="bias-row">
+          <span class="bias-label">Accuracy Elo:</span>
+          <span class="bias-value">{{ (biasStatus.model_performance?.elo?.accuracy * 100).toFixed(1) }}%</span>
+        </div>
+        <div class="bias-row">
+          <span class="bias-label">Equipos con forma:</span>
+          <span class="bias-value">{{ biasStatus.teams_with_form }}</span>
+        </div>
+      </div>
+    </div>
+
     <div style="margin-top:24px">
       <LiveResults :results="results" />
     </div>
@@ -69,6 +110,7 @@
 import { ref, computed, onMounted, reactive } from 'vue'
 import { useTeamsStore } from '../stores/teams'
 import { useResultsStore } from '../stores/results'
+import { api } from '../api/client'
 import LiveResults from '../components/LiveResults.vue'
 import Notification from '../components/Notification.vue'
 
@@ -78,6 +120,9 @@ const notif = ref<any>(null)
 
 const { teams } = teamsStore
 const { results, stats } = resultsStore
+
+const autoLoading = ref(false)
+const biasStatus = ref<any>(null)
 
 const newResult = reactive({
   team_a: '',
@@ -110,12 +155,53 @@ async function submitResult() {
   newResult.team_b = ''
   newResult.score_a = null
   newResult.score_b = null
-  notif.value?.show('Resultado registrado. Grupos y Bracket actualizados.', 'success')
+  notif.value?.show('Resultado registrado. Grupos, Bracket y Sesgo actualizados.', 'success')
+  await loadBiasStatus()
+}
+
+async function fetchNewResults() {
+  autoLoading.value = true
+  try {
+    const resp = await api.post<any>('/admin/fetch-results')
+    if (resp.new_results > 0) {
+      notif.value?.show(`${resp.new_results} nuevos resultados encontrados. Total: ${resp.total}`, 'success')
+      await resultsStore.fetchResults()
+      await loadBiasStatus()
+    } else {
+      notif.value?.show(resp.message || 'No hay resultados nuevos', 'warning')
+    }
+  } catch (e: any) {
+    notif.value?.show('Error al buscar resultados: ' + (e.message || 'Desconocido'), 'warning')
+  } finally {
+    autoLoading.value = false
+  }
+}
+
+async function recalibrateBias() {
+  autoLoading.value = true
+  try {
+    const resp = await api.post<any>('/admin/recalibrate')
+    notif.value?.show(`Sesgo recalibrado con ${resp.total_tracked} resultados`, 'success')
+    await loadBiasStatus()
+  } catch (e: any) {
+    notif.value?.show('Error al recalibrar: ' + (e.message || 'Desconocido'), 'warning')
+  } finally {
+    autoLoading.value = false
+  }
+}
+
+async function loadBiasStatus() {
+  try {
+    biasStatus.value = await api.get<any>('/admin/bias-status')
+  } catch (e) {
+    console.error(e)
+  }
 }
 
 onMounted(async () => {
   await teamsStore.fetchTeams()
   await resultsStore.fetchResults()
+  await loadBiasStatus()
 })
 </script>
 
@@ -146,4 +232,43 @@ onMounted(async () => {
 }
 .score-sep { font-size: 1.2rem; font-weight: 700; color: var(--text-muted); }
 .form-select { width: 100%; }
+.auto-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.spinner-inline {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border-color);
+  border-top-color: var(--lila);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.bias-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+}
+.bias-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+.bias-label {
+  color: var(--text-muted);
+}
+.bias-value {
+  font-weight: 600;
+  color: var(--lila);
+}
 </style>

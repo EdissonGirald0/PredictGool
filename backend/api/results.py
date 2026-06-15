@@ -59,6 +59,16 @@ def add_result(req: ResultRequest):
     except Exception:
         pass
 
+    from models.bias import record_prediction_outcome
+    from models.dixon_coles import predict_match_simple
+    from models.elo import win_probability
+    try:
+        dc_pred = predict_match_simple(tid_a, tid_b)
+        elo_pred = win_probability(tid_a, tid_b)
+        record_prediction_outcome(tid_a, tid_b, req.score_a, req.score_b, dc_pred, elo_pred)
+    except Exception:
+        pass
+
     return {"status": "ok", "result": entry}
 
 

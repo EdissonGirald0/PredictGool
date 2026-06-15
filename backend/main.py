@@ -25,6 +25,7 @@ from api.results import router as results_router
 from api.admin import router as admin_router
 from api.accuracy import router as accuracy_router
 from api.auth import router as auth_router
+from api.updater import router as updater_router
 
 
 @asynccontextmanager
@@ -54,6 +55,7 @@ app.include_router(results_router)
 app.include_router(admin_router)
 app.include_router(accuracy_router)
 app.include_router(auth_router)
+app.include_router(updater_router)
 
 
 FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend" / "dist"

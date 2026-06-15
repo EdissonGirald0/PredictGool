@@ -13,6 +13,7 @@ from pathlib import Path
 
 from models.elo import get_elo, win_probability
 from models.dixon_coles import predict_match_simple, predict_scoreline
+from models.bias import get_dynamic_weights, apply_team_bias, get_confidence_level
 
 MODEL_DIR = Path(__file__).resolve().parent.parent / "data" / "models"
 
@@ -98,7 +99,13 @@ def predict_ensemble(
     except Exception:
         pass
 
-    w = ENSEMBLE_WEIGHTS
+    w = get_dynamic_weights()
+
+    dc_result_raw = dict(dc_result)
+    biased = apply_team_bias(team_a_id, team_b_id, dc_result["win"], dc_result["draw"], dc_result["loss"])
+    dc_result["win"] = biased["win"]
+    dc_result["draw"] = biased["draw"]
+    dc_result["loss"] = biased["loss"]
 
     final_win = (w["dixon_coles"] * dc_result["win"] + w["xgboost"] * xgb_win + w["elo"] * elo_result["win"])
     final_draw = (w["dixon_coles"] * dc_result["draw"] + w["xgboost"] * xgb_draw + w["elo"] * elo_result["draw"])
@@ -127,7 +134,8 @@ def predict_ensemble(
             "elo": {"win": round(elo_result["win"], 4), "draw": round(elo_result["draw"], 4), "loss": round(elo_result["loss"], 4)},
             "xgboost": {"win": round(xgb_win, 4), "draw": round(xgb_draw, 4), "loss": round(xgb_loss, 4)},
         },
-        "ensemble_weights": ENSEMBLE_WEIGHTS,
+        "ensemble_weights": {k: round(v, 4) for k, v in w.items()},
+        "confidence": get_confidence_level(final_win, final_draw),
     }
 
     if detailed:

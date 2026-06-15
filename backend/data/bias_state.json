@@ -1,0 +1,183 @@
+{
+  "version": 2,
+  "updated_at": "2026-06-15T10:06:53.459480",
+  "total_tracked": 13,
+  "model_performance": {
+    "dixon_coles": {
+      "correct": 9,
+      "total": 13,
+      "recent": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        true,
+        true
+      ]
+    },
+    "elo": {
+      "correct": 8,
+      "total": 13,
+      "recent": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        true,
+        true,
+        false,
+        true,
+        true,
+        false,
+        true,
+        true
+      ]
+    }
+  },
+  "team_form": {
+    "mexico": {
+      "form_factor": -0.04,
+      "matches": 1,
+      "total_overperformance": -0.03999999999999987
+    },
+    "south_africa": {
+      "form_factor": -0.6,
+      "matches": 1,
+      "total_overperformance": -0.6
+    },
+    "south_korea": {
+      "form_factor": 0.32,
+      "matches": 1,
+      "total_overperformance": 0.32
+    },
+    "czech_republic": {
+      "form_factor": 0.28,
+      "matches": 1,
+      "total_overperformance": 0.2800000000000001
+    },
+    "canada": {
+      "form_factor": -1.1,
+      "matches": 1,
+      "total_overperformance": -1.1
+    },
+    "bosnia_and_herzegovina": {
+      "form_factor": 0.7,
+      "matches": 1,
+      "total_overperformance": 0.7
+    },
+    "qatar": {
+      "form_factor": 0.04,
+      "matches": 1,
+      "total_overperformance": 0.040000000000000036
+    },
+    "switzerland": {
+      "form_factor": -0.44,
+      "matches": 1,
+      "total_overperformance": -0.43999999999999995
+    },
+    "brazil": {
+      "form_factor": -1.73,
+      "matches": 1,
+      "total_overperformance": -1.73
+    },
+    "morocco": {
+      "form_factor": 0.7,
+      "matches": 1,
+      "total_overperformance": 0.7
+    },
+    "haiti": {
+      "form_factor": -0.717,
+      "matches": 2,
+      "total_overperformance": -1.4340000000000002
+    },
+    "scotland": {
+      "form_factor": -0.666,
+      "matches": 2,
+      "total_overperformance": -1.3319999999999999
+    },
+    "united_states": {
+      "form_factor": 2.14,
+      "matches": 1,
+      "total_overperformance": 2.1399999999999997
+    },
+    "paraguay": {
+      "form_factor": 0.4,
+      "matches": 1,
+      "total_overperformance": 0.39999999999999997
+    },
+    "australia": {
+      "form_factor": 0.77,
+      "matches": 1,
+      "total_overperformance": 0.77
+    },
+    "turkey": {
+      "form_factor": -1.17,
+      "matches": 1,
+      "total_overperformance": -1.17
+    },
+    "germany": {
+      "form_factor": 3.58,
+      "matches": 1,
+      "total_overperformance": 3.5799999999999996
+    },
+    "curaçao": {
+      "form_factor": 0.4,
+      "matches": 1,
+      "total_overperformance": 0.39999999999999997
+    },
+    "ivory_coast": {
+      "form_factor": -0.98,
+      "matches": 1,
+      "total_overperformance": -0.9799999999999998
+    },
+    "ecuador": {
+      "form_factor": -0.6,
+      "matches": 1,
+      "total_overperformance": -0.6
+    },
+    "netherlands": {
+      "form_factor": -0.64,
+      "matches": 1,
+      "total_overperformance": -0.6400000000000001
+    },
+    "japan": {
+      "form_factor": 1.7,
+      "matches": 1,
+      "total_overperformance": 1.7
+    },
+    "sweden": {
+      "form_factor": 3.23,
+      "matches": 1,
+      "total_overperformance": 3.23
+    },
+    "tunisia": {
+      "form_factor": 0.37,
+      "matches": 1,
+      "total_overperformance": 0.36999999999999994
+    }
+  },
+  "ensemble_weights": {
+    "dixon_coles": 0.4785,
+    "xgboost": 0.3617,
+    "elo": 0.1598
+  },
+  "global_stats": {
+    "home_win_rate": 0.615,
+    "draw_rate": 0.308,
+    "away_win_rate": 0.077,
+    "avg_goals_per_match": 3.08
+  },
+  "confidence_thresholds": {
+    "high": 0.77,
+    "medium": 0.64,
+    "low": 0.49
+  }
+}
