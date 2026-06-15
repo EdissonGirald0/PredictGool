@@ -1,50 +1,37 @@
-# PredictGool — Dockerfile para Railway
-# Backend FastAPI + Frontend Vue.js build estático
+# PredictGool — Dockerfile multi-stage para Railway
+# Stage 1: Build frontend (Node.js)
+# Stage 2: Runtime (Python + built frontend)
 
-FROM python:3.13-slim AS backend
-
-ENV PYTHONUNBUFFERED=1
-ENV DEBIAN_FRONTEND=noninteractive
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl ca-certificates gnupg \
-    && mkdir -p /etc/apt/keyrings \
-    && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
-    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_22.x nodistro main" > /etc/apt/sources.list.d/nodesource.list \
-    && apt-get update && apt-get install -y --no-install-recommends nodejs \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /app
-
-COPY backend/requirements.txt ./backend/
-RUN pip install --no-cache-dir -r backend/requirements.txt
-
-COPY backend/ ./backend/
-
+FROM node:22-slim AS frontend-builder
 WORKDIR /app/frontend
-COPY frontend/package.json frontend/package-lock.json* ./
-RUN npm ci --omit=dev 2>/dev/null || npm install
-
+COPY frontend/package*.json ./
+RUN npm ci 2>/dev/null || npm install
 COPY frontend/ ./
 RUN npm run build
 
+FROM python:3.13-slim AS runtime
+ENV PYTHONUNBUFFERED=1
+
+RUN pip install --no-cache-dir \
+    fastapi==0.115.6 \
+    "uvicorn[standard]==0.34.0" \
+    numpy==2.2.3 \
+    scipy==1.15.2 \
+    pandas==2.2.3 \
+    httpx==0.28.1 \
+    pydantic==2.10.5 \
+    python-dotenv==1.1.0 \
+    bcrypt==4.0.1
+
 WORKDIR /app
-RUN cp -r frontend/dist dist/
+COPY backend/ ./backend/
+COPY --from=frontend-builder /app/frontend/dist /app/frontend/dist
 
-WORKDIR /app/backend
-
-RUN mkdir -p data/models
-
-RUN python -c "
-from models.generate_dataset import generate_dataset, save_dataset
-save_dataset(generate_dataset(1000), 'data/historical_matches.json')
-from models.train_xgboost import train_xgboost_model
-train_xgboost_model()
-" 2>/dev/null || echo "XGBoost training skipped (will run at startup)"
+RUN mkdir -p /app/backend/data/models
 
 ENV HOST=0.0.0.0
 ENV PORT=8000
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "python run_scrapers.py 2>/dev/null; uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+CMD ["sh", "-c", "cd /app/backend && python run_scrapers.py 2>/dev/null; exec uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
