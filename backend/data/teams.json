@@ -1,0 +1,386 @@
+[
+  {
+    "id": "mexico",
+    "name": "Mexico",
+    "group": "A",
+    "fifa_rank": null,
+    "elo": 1845,
+    "flag_emoji": "🇲🇽"
+  },
+  {
+    "id": "south_korea",
+    "name": "South Korea",
+    "group": "A",
+    "fifa_rank": null,
+    "elo": 1835,
+    "flag_emoji": "🇰🇷"
+  },
+  {
+    "id": "czech_republic",
+    "name": "Czech Republic",
+    "group": "A",
+    "fifa_rank": null,
+    "elo": 1805,
+    "flag_emoji": "🇨🇿"
+  },
+  {
+    "id": "south_africa",
+    "name": "South Africa",
+    "group": "A",
+    "fifa_rank": null,
+    "elo": 1755,
+    "flag_emoji": "🇿🇦"
+  },
+  {
+    "id": "switzerland",
+    "name": "Switzerland",
+    "group": "B",
+    "fifa_rank": null,
+    "elo": 1905,
+    "flag_emoji": "🇨🇭"
+  },
+  {
+    "id": "canada",
+    "name": "Canada",
+    "group": "B",
+    "fifa_rank": null,
+    "elo": 1800,
+    "flag_emoji": "🇨🇦"
+  },
+  {
+    "id": "qatar",
+    "name": "Qatar",
+    "group": "B",
+    "fifa_rank": null,
+    "elo": 1765,
+    "flag_emoji": "🇶🇦"
+  },
+  {
+    "id": "bosnia_and_herzegovina",
+    "name": "Bosnia and Herzegovina",
+    "group": "B",
+    "fifa_rank": null,
+    "elo": 1750,
+    "flag_emoji": "🇧🇦"
+  },
+  {
+    "id": "scotland",
+    "name": "Scotland",
+    "group": "C",
+    "fifa_rank": null,
+    "elo": 1830,
+    "flag_emoji": "🏴󠁧󠁢󠁳󠁣󠁴󠁿"
+  },
+  {
+    "id": "morocco",
+    "name": "Morocco",
+    "group": "C",
+    "fifa_rank": null,
+    "elo": 1885,
+    "flag_emoji": "🇲🇦"
+  },
+  {
+    "id": "brazil",
+    "name": "Brazil",
+    "group": "C",
+    "fifa_rank": null,
+    "elo": 2040,
+    "flag_emoji": "🇧🇷"
+  },
+  {
+    "id": "haiti",
+    "name": "Haiti",
+    "group": "C",
+    "fifa_rank": null,
+    "elo": 1680,
+    "flag_emoji": "🇭🇹"
+  },
+  {
+    "id": "united_states",
+    "name": "United States",
+    "group": "D",
+    "fifa_rank": null,
+    "elo": 1850,
+    "flag_emoji": "🇺🇸"
+  },
+  {
+    "id": "australia",
+    "name": "Australia",
+    "group": "D",
+    "fifa_rank": null,
+    "elo": 1815,
+    "flag_emoji": "🇦🇺"
+  },
+  {
+    "id": "turkey",
+    "name": "Turkey",
+    "group": "D",
+    "fifa_rank": null,
+    "elo": 1860,
+    "flag_emoji": "🇹🇷"
+  },
+  {
+    "id": "paraguay",
+    "name": "Paraguay",
+    "group": "D",
+    "fifa_rank": null,
+    "elo": 1790,
+    "flag_emoji": "🇵🇾"
+  },
+  {
+    "id": "germany",
+    "name": "Germany",
+    "group": "E",
+    "fifa_rank": null,
+    "elo": 1990,
+    "flag_emoji": "🇩🇪"
+  },
+  {
+    "id": "ivory_coast",
+    "name": "Ivory Coast",
+    "group": "E",
+    "fifa_rank": null,
+    "elo": 1860,
+    "flag_emoji": "🇨🇮"
+  },
+  {
+    "id": "ecuador",
+    "name": "Ecuador",
+    "group": "E",
+    "fifa_rank": null,
+    "elo": 1780,
+    "flag_emoji": "🇪🇨"
+  },
+  {
+    "id": "curaçao",
+    "name": "Curaçao",
+    "group": "E",
+    "fifa_rank": null,
+    "elo": 1670,
+    "flag_emoji": "🇨🇼"
+  },
+  {
+    "id": "sweden",
+    "name": "Sweden",
+    "group": "F",
+    "fifa_rank": null,
+    "elo": 1840,
+    "flag_emoji": "🇸🇪"
+  },
+  {
+    "id": "japan",
+    "name": "Japan",
+    "group": "F",
+    "fifa_rank": null,
+    "elo": 1880,
+    "flag_emoji": "🇯🇵"
+  },
+  {
+    "id": "netherlands",
+    "name": "Netherlands",
+    "group": "F",
+    "fifa_rank": null,
+    "elo": 2020,
+    "flag_emoji": "🇳🇱"
+  },
+  {
+    "id": "tunisia",
+    "name": "Tunisia",
+    "group": "F",
+    "fifa_rank": null,
+    "elo": 1795,
+    "flag_emoji": "🇹🇳"
+  },
+  {
+    "id": "belgium",
+    "name": "Belgium",
+    "group": "G",
+    "fifa_rank": null,
+    "elo": 1970,
+    "flag_emoji": "🇧🇪"
+  },
+  {
+    "id": "egypt",
+    "name": "Egypt",
+    "group": "G",
+    "fifa_rank": null,
+    "elo": 1825,
+    "flag_emoji": "🇪🇬"
+  },
+  {
+    "id": "iran",
+    "name": "Iran",
+    "group": "G",
+    "fifa_rank": null,
+    "elo": 1855,
+    "flag_emoji": "🇮🇷"
+  },
+  {
+    "id": "new_zealand",
+    "name": "New Zealand",
+    "group": "G",
+    "fifa_rank": null,
+    "elo": 1720,
+    "flag_emoji": "🇳🇿"
+  },
+  {
+    "id": "spain",
+    "name": "Spain",
+    "group": "H",
+    "fifa_rank": null,
+    "elo": 2080,
+    "flag_emoji": "🇪🇸"
+  },
+  {
+    "id": "cape_verde",
+    "name": "Cape Verde",
+    "group": "H",
+    "fifa_rank": null,
+    "elo": 1710,
+    "flag_emoji": "🇨🇻"
+  },
+  {
+    "id": "saudi_arabia",
+    "name": "Saudi Arabia",
+    "group": "H",
+    "fifa_rank": null,
+    "elo": 1770,
+    "flag_emoji": "🇸🇦"
+  },
+  {
+    "id": "uruguay",
+    "name": "Uruguay",
+    "group": "H",
+    "fifa_rank": null,
+    "elo": 1955,
+    "flag_emoji": "🇺🇾"
+  },
+  {
+    "id": "france",
+    "name": "France",
+    "group": "I",
+    "fifa_rank": null,
+    "elo": 2108,
+    "flag_emoji": "🇫🇷"
+  },
+  {
+    "id": "senegal",
+    "name": "Senegal",
+    "group": "I",
+    "fifa_rank": null,
+    "elo": 1870,
+    "flag_emoji": "🇸🇳"
+  },
+  {
+    "id": "iraq",
+    "name": "Iraq",
+    "group": "I",
+    "fifa_rank": null,
+    "elo": 1745,
+    "flag_emoji": "🇮🇶"
+  },
+  {
+    "id": "norway",
+    "name": "Norway",
+    "group": "I",
+    "fifa_rank": null,
+    "elo": 1880,
+    "flag_emoji": "🇳🇴"
+  },
+  {
+    "id": "argentina",
+    "name": "Argentina",
+    "group": "J",
+    "fifa_rank": null,
+    "elo": 2135,
+    "flag_emoji": "🇦🇷"
+  },
+  {
+    "id": "algeria",
+    "name": "Algeria",
+    "group": "J",
+    "fifa_rank": null,
+    "elo": 1810,
+    "flag_emoji": "🇩🇿"
+  },
+  {
+    "id": "austria",
+    "name": "Austria",
+    "group": "J",
+    "fifa_rank": null,
+    "elo": 1890,
+    "flag_emoji": "🇦🇹"
+  },
+  {
+    "id": "jordan",
+    "name": "Jordan",
+    "group": "J",
+    "fifa_rank": null,
+    "elo": 1720,
+    "flag_emoji": "🇯🇴"
+  },
+  {
+    "id": "portugal",
+    "name": "Portugal",
+    "group": "K",
+    "fifa_rank": null,
+    "elo": 2005,
+    "flag_emoji": "🇵🇹"
+  },
+  {
+    "id": "dr_congo",
+    "name": "DR Congo",
+    "group": "K",
+    "fifa_rank": null,
+    "elo": 1740,
+    "flag_emoji": "🇨🇩"
+  },
+  {
+    "id": "uzbekistan",
+    "name": "Uzbekistan",
+    "group": "K",
+    "fifa_rank": null,
+    "elo": 1735,
+    "flag_emoji": "🇺🇿"
+  },
+  {
+    "id": "colombia",
+    "name": "Colombia",
+    "group": "K",
+    "fifa_rank": null,
+    "elo": 1940,
+    "flag_emoji": "🇨🇴"
+  },
+  {
+    "id": "england",
+    "name": "England",
+    "group": "L",
+    "fifa_rank": null,
+    "elo": 2055,
+    "flag_emoji": "🏴󠁧󠁢󠁥󠁮󠁧󠁿"
+  },
+  {
+    "id": "croatia",
+    "name": "Croatia",
+    "group": "L",
+    "fifa_rank": null,
+    "elo": 1965,
+    "flag_emoji": "🇭🇷"
+  },
+  {
+    "id": "ghana",
+    "name": "Ghana",
+    "group": "L",
+    "fifa_rank": null,
+    "elo": 1835,
+    "flag_emoji": "🇬🇭"
+  },
+  {
+    "id": "panama",
+    "name": "Panama",
+    "group": "L",
+    "fifa_rank": null,
+    "elo": 1725,
+    "flag_emoji": "🇵🇦"
+  }
+]

@@ -1,0 +1,145 @@
+[
+  {
+    "id": "res_mexico_south_africa",
+    "team_a": "Mexico",
+    "team_b": "South Africa",
+    "score_a": 2,
+    "score_b": 0,
+    "stage": "group",
+    "group": "A",
+    "date": "2026-06-11",
+    "played": true
+  },
+  {
+    "id": "res_south_korea_czech_republic",
+    "team_a": "South Korea",
+    "team_b": "Czech Republic",
+    "score_a": 2,
+    "score_b": 1,
+    "stage": "group",
+    "group": "A",
+    "date": "2026-06-11",
+    "played": true
+  },
+  {
+    "id": "res_canada_bosnia_and_herzegovina",
+    "team_a": "Canada",
+    "team_b": "Bosnia and Herzegovina",
+    "score_a": 1,
+    "score_b": 1,
+    "stage": "group",
+    "group": "B",
+    "date": "2026-06-11",
+    "played": true
+  },
+  {
+    "id": "res_qatar_switzerland",
+    "team_a": "Qatar",
+    "team_b": "Switzerland",
+    "score_a": 1,
+    "score_b": 1,
+    "stage": "group",
+    "group": "B",
+    "date": "2026-06-11",
+    "played": true
+  },
+  {
+    "id": "res_brazil_morocco",
+    "team_a": "Brazil",
+    "team_b": "Morocco",
+    "score_a": 1,
+    "score_b": 1,
+    "stage": "group",
+    "group": "C",
+    "date": "2026-06-11",
+    "played": true
+  },
+  {
+    "id": "res_haiti_scotland",
+    "team_a": "Haiti",
+    "team_b": "Scotland",
+    "score_a": 0,
+    "score_b": 1,
+    "stage": "group",
+    "group": "C",
+    "date": "2026-06-11",
+    "played": true
+  },
+  {
+    "id": "res_united_states_paraguay",
+    "team_a": "United States",
+    "team_b": "Paraguay",
+    "score_a": 4,
+    "score_b": 1,
+    "stage": "group",
+    "group": "D",
+    "date": "2026-06-11",
+    "played": true
+  },
+  {
+    "id": "res_australia_turkey",
+    "team_a": "Australia",
+    "team_b": "Turkey",
+    "score_a": 2,
+    "score_b": 0,
+    "stage": "group",
+    "group": "D",
+    "date": "2026-06-11",
+    "played": true
+  },
+  {
+    "id": "res_germany_curaçao",
+    "team_a": "Germany",
+    "team_b": "Curaçao",
+    "score_a": 7,
+    "score_b": 1,
+    "stage": "group",
+    "group": "E",
+    "date": "2026-06-11",
+    "played": true
+  },
+  {
+    "id": "res_ivory_coast_ecuador",
+    "team_a": "Ivory Coast",
+    "team_b": "Ecuador",
+    "score_a": 1,
+    "score_b": 0,
+    "stage": "group",
+    "group": "E",
+    "date": "2026-06-11",
+    "played": true
+  },
+  {
+    "id": "res_netherlands_japan",
+    "team_a": "Netherlands",
+    "team_b": "Japan",
+    "score_a": 2,
+    "score_b": 2,
+    "stage": "group",
+    "group": "F",
+    "date": "2026-06-11",
+    "played": true
+  },
+  {
+    "id": "res_sweden_tunisia",
+    "team_a": "Sweden",
+    "team_b": "Tunisia",
+    "score_a": 5,
+    "score_b": 1,
+    "stage": "group",
+    "group": "F",
+    "date": "2026-06-11",
+    "played": true
+  },
+  {
+    "id": "res_scotland_haiti",
+    "team_a": "Scotland",
+    "team_b": "Haiti",
+    "score_a": 2,
+    "score_b": 0,
+    "stage": "group",
+    "group": "C",
+    "date": "",
+    "played": true
+  }
+]
