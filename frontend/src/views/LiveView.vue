@@ -108,6 +108,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, reactive } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useTeamsStore } from '../stores/teams'
 import { useResultsStore } from '../stores/results'
 import { api } from '../api/client'
@@ -118,8 +119,8 @@ const teamsStore = useTeamsStore()
 const resultsStore = useResultsStore()
 const notif = ref<any>(null)
 
-const { teams } = teamsStore
-const { results, stats } = resultsStore
+const { teams } = storeToRefs(teamsStore)
+const { results, stats } = storeToRefs(resultsStore)
 
 const autoLoading = ref(false)
 const biasStatus = ref<any>(null)
@@ -140,8 +141,8 @@ const canSubmit = computed(() =>
 
 async function submitResult() {
   if (!canSubmit.value) return
-  const teamAData = teams.find(t => t.id === newResult.team_a)
-  const teamBData = teams.find(t => t.id === newResult.team_b)
+  const teamAData = teams.value.find(t => t.id === newResult.team_a)
+  const teamBData = teams.value.find(t => t.id === newResult.team_b)
   await resultsStore.addResult({
     team_a: teamAData?.name || newResult.team_a,
     team_b: teamBData?.name || newResult.team_b,

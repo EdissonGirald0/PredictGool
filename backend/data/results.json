@@ -141,5 +141,16 @@
     "group": "C",
     "date": "",
     "played": true
+  },
+  {
+    "id": "res_spain_cape_verde",
+    "team_a": "Spain",
+    "team_b": "Cape Verde",
+    "score_a": 3,
+    "score_b": 0,
+    "stage": "group",
+    "group": "H",
+    "date": "",
+    "played": true
   }
 ]
