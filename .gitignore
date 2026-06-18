@@ -36,3 +36,4 @@ Thumbs.db
 
 # PDFs
 *.pdf
+backend/data/historical_matches.json
