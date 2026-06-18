@@ -94,11 +94,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { api, type StandingRow, type StandingsData } from '../api/client'
 import { useTeamsStore } from '../stores/teams'
+import { useResultsStore } from '../stores/results'
 
 const store = useTeamsStore()
+const resultsStore = useResultsStore()
 
 const standings = ref<Record<string, StandingRow[]>>({})
 const bestThirds = ref<{ team_name: string; pts: number; gd: number; gf: number }[]>([])
@@ -162,6 +164,7 @@ async function fetchData() {
 }
 
 onMounted(fetchData)
+watch(() => resultsStore.dataVersion, fetchData)
 </script>
 
 <style scoped>

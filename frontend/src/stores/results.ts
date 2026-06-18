@@ -6,6 +6,7 @@ export const useResultsStore = defineStore('results', () => {
   const results = ref<MatchResult[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)
+  const dataVersion = ref(0)
 
   const stats = computed(() => ({
     total: results.value.length,
@@ -15,11 +16,16 @@ export const useResultsStore = defineStore('results', () => {
     awayWins: results.value.filter(r => r.score_b > r.score_a).length,
   }))
 
+  function bumpVersion() {
+    dataVersion.value++
+  }
+
   async function fetchResults() {
     loading.value = true
     error.value = null
     try {
       results.value = await api.get<MatchResult[]>('/results')
+      bumpVersion()
     } catch (e: any) {
       error.value = e.message
     } finally {
@@ -39,5 +45,5 @@ export const useResultsStore = defineStore('results', () => {
     }
   }
 
-  return { results, loading, error, stats, fetchResults, addResult }
+  return { results, loading, error, stats, dataVersion, bumpVersion, fetchResults, addResult }
 })

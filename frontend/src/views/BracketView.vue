@@ -67,9 +67,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { api, type CurrentBracket, type BracketStage } from '../api/client'
+import { useResultsStore } from '../stores/results'
 
+const resultsStore = useResultsStore()
 const bracket = ref<CurrentBracket | null>(null)
 const loading = ref(true)
 const error = ref<string | null>(null)
@@ -115,6 +117,7 @@ async function fetchBracket() {
 }
 
 onMounted(fetchBracket)
+watch(() => resultsStore.dataVersion, fetchBracket)
 </script>
 
 <style scoped>
