@@ -74,12 +74,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { api } from '../api/client'
-import { useResultsStore } from '../stores/results'
 import AccuracyChart from '../components/AccuracyChart.vue'
-
-const resultsStore = useResultsStore()
 
 interface Comparison {
   team_a: string
@@ -132,7 +129,6 @@ const chartPredictions = computed(() => {
 onMounted(async () => {
   await loadAccuracy()
 })
-watch(() => resultsStore.dataVersion, loadAccuracy)
 
 async function loadAccuracy() {
   try {

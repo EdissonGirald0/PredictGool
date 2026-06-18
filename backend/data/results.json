@@ -152,5 +152,27 @@
     "group": "H",
     "date": "",
     "played": true
+  },
+  {
+    "id": "res_belgium_egypt",
+    "team_a": "Belgium",
+    "team_b": "Egypt",
+    "score_a": 2,
+    "score_b": 0,
+    "stage": "group",
+    "group": "G",
+    "date": "",
+    "played": true
+  },
+  {
+    "id": "res_senegal_iraq",
+    "team_a": "Senegal",
+    "team_b": "Iraq",
+    "score_a": 2,
+    "score_b": 0,
+    "stage": "group",
+    "group": "I",
+    "date": "",
+    "played": true
   }
 ]

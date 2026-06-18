@@ -6,18 +6,16 @@
       <span class="live-badge">EN VIVO</span>
     </p>
 
-    <div v-if="loading" class="spinner"></div>
+    <div v-if="dataStore.loading && !hasData" class="spinner"></div>
 
-    <div v-else-if="error" class="card" style="text-align:center;color:var(--loss-color)">
-      {{ error }}
-      <button class="btn btn-outline" style="margin-top:12px" @click="fetchData">Reintentar</button>
+    <div v-else-if="dataStore.error" class="card" style="text-align:center;color:var(--loss-color)">
+      {{ dataStore.error }}
+      <button class="btn btn-outline" style="margin-top:12px" @click="dataStore.refreshAll()">Reintentar</button>
     </div>
 
     <div v-else class="groups-grid">
       <div v-for="gid in sortedGroupIds" :key="gid" class="group-card card">
-        <h3 class="section-title">
-          Grupo {{ gid }}
-        </h3>
+        <h3 class="section-title">Grupo {{ gid }}</h3>
         <table>
           <thead>
             <tr>
@@ -35,13 +33,13 @@
           </thead>
           <tbody>
             <tr
-              v-for="(row, i) in (standings[gid] || defaultRows(teamsByGroup[gid] || []))"
-              :key="row.team_id"
+              v-for="(row, i) in (standings[gid] || defaultRows(gid))"
+              :key="row.team_id || row.team_name"
               :class="{ 'qualified-row': row.position && row.position <= 2, 'third-row': row.position === 3 }"
             >
               <td>{{ row.position || i + 1 }}</td>
               <td class="team-cell">
-                <span class="team-emoji">{{ getFlag(row.team_id) }}</span>
+                <span class="team-emoji">{{ getFlag(row.team_id || row.team_name) }}</span>
                 <span>{{ row.team_name }}</span>
               </td>
               <td><strong>{{ row.pts || 0 }}</strong></td>
@@ -94,38 +92,35 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
-import { api, type StandingRow, type StandingsData } from '../api/client'
+import { computed, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useDataStore } from '../stores/data'
 import { useTeamsStore } from '../stores/teams'
-import { useResultsStore } from '../stores/results'
 
-const store = useTeamsStore()
-const resultsStore = useResultsStore()
-
-const standings = ref<Record<string, StandingRow[]>>({})
-const bestThirds = ref<{ team_name: string; pts: number; gd: number; gf: number }[]>([])
-const teamsByGroup = ref<Record<string, any[]>>({})
-const loading = ref(true)
-const error = ref<string | null>(null)
+const dataStore = useDataStore()
+const teamsStore = useTeamsStore()
+const { standings, bestThirds } = storeToRefs(dataStore)
 
 const sortedGroupIds = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L']
 
-const FLAGS: Record<string, string> = {}
+const hasData = computed(() => Object.keys(standings.value).length > 0)
 
-function getFlag(id: string): string {
-  return FLAGS[id] || '🏳️'
+function getFlag(nameOrId: string): string {
+  const team = teamsStore.teams.find(t => t.id === nameOrId || t.name === nameOrId)
+  return team?.flag_emoji || '🏳️'
 }
 
 function getGroupForTeam(name: string): string {
-  return store.teams.find(t => t.name === name)?.group || '?'
+  return teamsStore.teams.find(t => t.name === name)?.group || '?'
 }
 
-function defaultRows(teamList: any[]) {
-  return teamList.map((t: any) => ({
-    team_id: t.id,
-    team_name: t.name,
+function defaultRows(gid: string) {
+  const teamNames = teamsStore.teams.filter(t => t.group === gid).map(t => t.name)
+  return teamNames.map((name, i) => ({
+    team_id: '',
+    team_name: name,
     pts: 0, played: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, position: 0,
-  })) as StandingRow[]
+  }))
 }
 
 function formatGD(gd: number): string {
@@ -135,36 +130,10 @@ function gdClass(gd: number): string {
   return gd > 0 ? 'gd-positive' : gd < 0 ? 'gd-negative' : ''
 }
 
-async function fetchData() {
-  loading.value = true
-  error.value = null
-  try {
-    const data = await api.get<StandingsData>('/simulate/standings')
-    standings.value = data.standings
-    bestThirds.value = data.all_thirds_sorted || []
-
-    if (!store.teams.length) {
-      await store.fetchTeams()
-    }
-    const teams = store.teams
-    for (const t of teams) {
-      FLAGS[t.id] = t.flag_emoji
-    }
-    const byGroup: Record<string, any[]> = {}
-    for (const t of teams) {
-      if (!byGroup[t.group]) byGroup[t.group] = []
-      byGroup[t.group].push(t)
-    }
-    teamsByGroup.value = byGroup
-  } catch (e: any) {
-    error.value = e.message
-  } finally {
-    loading.value = false
-  }
-}
-
-onMounted(fetchData)
-watch(() => resultsStore.dataVersion, fetchData)
+onMounted(async () => {
+  if (!teamsStore.teams.length) await teamsStore.fetchTeams()
+  if (!hasData.value) await dataStore.refreshAll()
+})
 </script>
 
 <style scoped>

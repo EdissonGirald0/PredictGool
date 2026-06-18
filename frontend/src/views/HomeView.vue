@@ -77,17 +77,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, watch } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useTeamsStore } from '../stores/teams'
 import { useSimulationStore } from '../stores/simulation'
-import { useResultsStore } from '../stores/results'
 import MonteCarloBars from '../components/MonteCarloBars.vue'
 import ChampionChart from '../components/ChampionChart.vue'
 import EloChart from '../components/EloChart.vue'
 
 const teamsStore = useTeamsStore()
 const simStore = useSimulationStore()
-const resultsStore = useResultsStore()
 
 const error = computed(() => teamsStore.error || simStore.error)
 
@@ -109,9 +107,6 @@ async function runSim() {
 
 onMounted(async () => {
   await teamsStore.fetchTeams()
-})
-watch(() => resultsStore.dataVersion, () => {
-  teamsStore.fetchTeams()
 })
 </script>
 

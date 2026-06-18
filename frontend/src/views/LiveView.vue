@@ -111,12 +111,14 @@ import { ref, computed, onMounted, reactive } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useTeamsStore } from '../stores/teams'
 import { useResultsStore } from '../stores/results'
+import { useDataStore } from '../stores/data'
 import { api } from '../api/client'
 import LiveResults from '../components/LiveResults.vue'
 import Notification from '../components/Notification.vue'
 
 const teamsStore = useTeamsStore()
 const resultsStore = useResultsStore()
+const dataStore = useDataStore()
 const notif = ref<any>(null)
 
 const { teams } = storeToRefs(teamsStore)
@@ -158,6 +160,7 @@ async function submitResult() {
   newResult.score_b = null
   notif.value?.show('Resultado registrado. Grupos, Bracket y Sesgo actualizados.', 'success')
   await loadBiasStatus()
+  await dataStore.refreshAll()
 }
 
 async function fetchNewResults() {
@@ -168,6 +171,7 @@ async function fetchNewResults() {
       notif.value?.show(`${resp.new_results} nuevos resultados encontrados. Total: ${resp.total}`, 'success')
       await resultsStore.fetchResults()
       await loadBiasStatus()
+      await dataStore.refreshAll()
     } else {
       notif.value?.show(resp.message || 'No hay resultados nuevos', 'warning')
     }

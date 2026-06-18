@@ -2,21 +2,21 @@
   <div class="container">
     <h1 class="page-title">Cuadro Eliminatorio</h1>
     <p class="page-subtitle">
-      Bracket bloqueado FIFA 2026 — R32 → Octavos → Cuartos → Semis → Final
+      Bracket bloqueado FIFA 2026 — R32 → Final
       <span class="live-badge">EN VIVO</span>
     </p>
 
-    <div v-if="loading" class="spinner"></div>
+    <div v-if="dataStore.loading && !hasData" class="spinner"></div>
 
-    <div v-else-if="error" class="card" style="text-align:center;color:var(--loss-color)">
-      {{ error }}
-      <button class="btn btn-outline" style="margin-top:12px" @click="fetchBracket">Reintentar</button>
+    <div v-else-if="dataStore.error" class="card" style="text-align:center;color:var(--loss-color)">
+      {{ dataStore.error }}
+      <button class="btn btn-outline" style="margin-top:12px" @click="dataStore.refreshAll()">Reintentar</button>
     </div>
 
     <div v-else>
       <div class="card" style="margin-bottom:20px">
         <h3 class="section-title">
-          {{ groupsComplete ? 'Bracket Eliminatorio' : 'Bracket Proyectado (fase de grupos en curso)' }}
+          {{ groupsComplete ? 'Bracket Eliminatorio' : 'Bracket Proyectado' }}
         </h3>
 
         <div class="bracket-scroll">
@@ -58,7 +58,7 @@
             <span class="q-name">{{ team }}</span>
           </div>
           <div v-if="qualifiedR32.length === 0" class="empty-state">
-            La fase de grupos aún no ha terminado. Los clasificados se mostrarán aquí.
+            La fase de grupos aún no ha terminado.
           </div>
         </div>
       </div>
@@ -67,57 +67,42 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
-import { api, type CurrentBracket, type BracketStage } from '../api/client'
-import { useResultsStore } from '../stores/results'
+import { computed, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useDataStore } from '../stores/data'
+import type { BracketStage } from '../api/client'
 
-const resultsStore = useResultsStore()
-const bracket = ref<CurrentBracket | null>(null)
-const loading = ref(true)
-const error = ref<string | null>(null)
+const dataStore = useDataStore()
+const { bracket } = storeToRefs(dataStore)
 
 const STAGE_ORDER = ['Round of 32', 'Round of 16', 'Quarter-finals', 'Semi-finals', 'Third place', 'Final']
+
+const hasData = computed(() => bracket.value !== null)
 
 const groupsComplete = computed(() => bracket.value?.groups_complete ?? false)
 const qualifiedR32 = computed(() => bracket.value?.qualified_r32 ?? [])
 
 function stageLabel(name: string): string {
   const labels: Record<string, string> = {
-    'Round of 32': 'R32',
-    'Round of 16': 'Octavos',
-    'Quarter-finals': 'Cuartos',
-    'Semi-finals': 'Semis',
-    'Third place': '3er Puesto',
-    'Final': 'Final',
+    'Round of 32': 'R32', 'Round of 16': 'Octavos',
+    'Quarter-finals': 'Cuartos', 'Semi-finals': 'Semis',
+    'Third place': '3er Puesto', 'Final': 'Final',
   }
   return labels[name] || name
 }
 
 const orderedStages = computed(() => {
-  if (!bracket.value?.stages) return {}
+  if (!bracket.value?.stages) return {} as Record<string, BracketStage[]>
   const result: Record<string, BracketStage[]> = {}
   for (const name of STAGE_ORDER) {
-    if (bracket.value.stages[name]) {
-      result[name] = bracket.value.stages[name]
-    }
+    if (bracket.value.stages[name]) result[name] = bracket.value.stages[name]
   }
   return result
 })
 
-async function fetchBracket() {
-  loading.value = true
-  error.value = null
-  try {
-    bracket.value = await api.get<CurrentBracket>('/simulate/bracket/current')
-  } catch (e: any) {
-    error.value = e.message
-  } finally {
-    loading.value = false
-  }
-}
-
-onMounted(fetchBracket)
-watch(() => resultsStore.dataVersion, fetchBracket)
+onMounted(async () => {
+  if (!hasData.value) await dataStore.refreshAll()
+})
 </script>
 
 <style scoped>
@@ -168,32 +153,12 @@ watch(() => resultsStore.dataVersion, fetchBracket)
   justify-content: space-between;
   align-items: center;
 }
-.team-name {
-  color: var(--text-secondary);
-}
-.team-advances .team-name {
-  color: var(--win-color);
-  font-weight: 600;
-}
-.team-score {
-  font-weight: 700;
-  color: var(--gold);
-  margin-left: 8px;
-}
-.match-vs {
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 0.7rem;
-}
-.score-sep {
-  color: var(--text-muted);
-}
-.match-date {
-  text-align: center;
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  margin-top: 4px;
-}
+.team-name { color: var(--text-secondary); }
+.team-advances .team-name { color: var(--win-color); font-weight: 600; }
+.team-score { font-weight: 700; color: var(--gold); margin-left: 8px; }
+.match-vs { text-align: center; color: var(--text-muted); font-size: 0.7rem; }
+.score-sep { color: var(--text-muted); }
+.match-date { text-align: center; font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; }
 .qualified-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -207,32 +172,13 @@ watch(() => resultsStore.dataVersion, fetchBracket)
   background: var(--bg-secondary);
   border-radius: var(--radius-sm);
 }
-.q-rank {
-  font-weight: 700;
-  color: var(--text-muted);
-  min-width: 22px;
-}
-.q-name {
-  font-weight: 500;
-}
-.empty-state {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 24px;
-  color: var(--text-muted);
-}
+.q-rank { font-weight: 700; color: var(--text-muted); min-width: 22px; }
+.q-name { font-weight: 500; }
+.empty-state { grid-column: 1 / -1; text-align: center; padding: 24px; color: var(--text-muted); }
 .live-badge {
-  background: rgba(243, 139, 168, 0.2);
-  color: var(--loss-color);
-  padding: 2px 10px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  margin-left: 8px;
-  animation: pulse 2s infinite;
+  background: rgba(243, 139, 168, 0.2); color: var(--loss-color);
+  padding: 2px 10px; border-radius: 12px; font-size: 0.75rem;
+  font-weight: 600; margin-left: 8px; animation: pulse 2s infinite;
 }
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
-}
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 </style>
