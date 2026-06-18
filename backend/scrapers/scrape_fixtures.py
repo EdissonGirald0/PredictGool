@@ -1,18 +1,9 @@
+import datetime
 """
-Scraping del calendario de partidos (fixtures) desde Wikipedia.
-Fuente: https://en.wikipedia.org/wiki/2026_FIFA_World_Cup
+Generación del calendario de partidos (fixtures) del Mundial 2026.
 """
 
-import httpx
-from bs4 import BeautifulSoup
 import json
-
-URL = "https://en.wikipedia.org/wiki/2026_FIFA_World_Cup"
-
-GROUP_STAGE_DATES = [
-    ("2026-06-11", "2026-06-19"),
-    ("2026-06-20", "2026-06-27"),
-]
 
 KNOCKOUT_SCHEDULE = [
     ("Round of 32", "2026-06-28", "2026-07-03", 16),
@@ -43,7 +34,6 @@ def generate_fixtures(groups: list[dict]) -> list[dict]:
     group_start_dates = {}
     base_date = "2026-06-11"
     for i, gl in enumerate(group_letters):
-        import datetime
         d = datetime.date.fromisoformat(base_date) + datetime.timedelta(days=i)
         group_start_dates[gl] = d.isoformat()
 
@@ -60,7 +50,6 @@ def generate_fixtures(groups: list[dict]) -> list[dict]:
         ]
         for j, (a_idx, b_idx) in enumerate(matchups):
             round_name = f"Jornada {j + 1}"
-            import datetime
             base = datetime.date.fromisoformat(group_start_dates[gl])
             match_date = base + datetime.timedelta(days=j * 4)
 
@@ -81,7 +70,6 @@ def generate_fixtures(groups: list[dict]) -> list[dict]:
 
     for stage, start, end, matches_count in KNOCKOUT_SCHEDULE:
         for m in range(matches_count):
-            import datetime
             d = datetime.date.fromisoformat(start)
             actual_date = d + datetime.timedelta(days=m)
             if actual_date > datetime.date.fromisoformat(end):
