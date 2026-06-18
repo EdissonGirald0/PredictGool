@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, HTTPException
 
-from utils.data_loader import load_json
+from utils.data_loader import load_json, name_to_id
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
@@ -18,8 +18,8 @@ def update_elo_all():
     for r in results:
         if not r.get("played"):
             continue
-        tid_a = r["team_a"].lower().replace(" ", "_")
-        tid_b = r["team_b"].lower().replace(" ", "_")
+        tid_a = name_to_id(r["team_a"])
+        tid_b = name_to_id(r["team_b"])
         try:
             update_elo(tid_a, tid_b, r["score_a"], r["score_b"], match_type="world_cup")
             updated += 1

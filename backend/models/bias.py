@@ -12,7 +12,7 @@ El sistema persiste en data/bias_state.json para mantener el aprendizaje entre r
 import math
 from datetime import datetime
 
-from utils.data_loader import load_json, save_json
+from utils.data_loader import load_json, save_json, name_to_id
 
 BIAS_FILE = "bias_state.json"
 WINDOW_SIZE = 20
@@ -165,8 +165,8 @@ def recalibrate_from_results() -> dict:
     for r in results:
         if not r.get("played"):
             continue
-        tid_a = r["team_a"].lower().replace(" ", "_")
-        tid_b = r["team_b"].lower().replace(" ", "_")
+        tid_a = name_to_id(r["team_a"])
+        tid_b = name_to_id(r["team_b"])
 
         try:
             dc_pred = predict_match_simple(tid_a, tid_b)

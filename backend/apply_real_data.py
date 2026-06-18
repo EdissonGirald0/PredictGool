@@ -1,89 +1,103 @@
 #!/usr/bin/env python3
 """
 Aplica los datos REALES del Mundial 2026 extraídos de Wikipedia.
+Nombres de selecciones en español.
 Actualiza: teams.json, groups.json, results.json, elo_ratings.json, fixtures.json
 """
 
-import json, sys, os
+import json, sys, os, unicodedata
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from utils.data_loader import save_json, load_json
 
+
+def make_id(name: str) -> str:
+    """Convierte nombre a ID: quita acentos, minúsculas, reemplaza espacios."""
+    nfkd = unicodedata.normalize('NFKD', name)
+    ascii_name = nfkd.encode('ascii', 'ignore').decode('ascii')
+    return ascii_name.lower().replace(" ", "_").replace("-", "_")
+
+
 # ============================================================
-# DATOS REALES DEL MUNDIAL 2026 (Wikipedia, 15 Jun 2026)
+# DATOS REALES DEL MUNDIAL 2026 — Nombres en español
 # ============================================================
 
 REAL_GROUPS = {
-    "A": ["Mexico", "South Korea", "Czech Republic", "South Africa"],
-    "B": ["Switzerland", "Canada", "Qatar", "Bosnia and Herzegovina"],
-    "C": ["Scotland", "Morocco", "Brazil", "Haiti"],
-    "D": ["United States", "Australia", "Turkey", "Paraguay"],
-    "E": ["Germany", "Ivory Coast", "Ecuador", "Curaçao"],
-    "F": ["Sweden", "Japan", "Netherlands", "Tunisia"],
-    "G": ["Belgium", "Egypt", "Iran", "New Zealand"],
-    "H": ["Spain", "Cape Verde", "Saudi Arabia", "Uruguay"],
-    "I": ["France", "Senegal", "Iraq", "Norway"],
-    "J": ["Argentina", "Algeria", "Austria", "Jordan"],
-    "K": ["Portugal", "DR Congo", "Uzbekistan", "Colombia"],
-    "L": ["England", "Croatia", "Ghana", "Panama"],
+    "A": ["México", "Corea del Sur", "República Checa", "Sudáfrica"],
+    "B": ["Suiza", "Canadá", "Catar", "Bosnia y Herzegovina"],
+    "C": ["Escocia", "Marruecos", "Brasil", "Haití"],
+    "D": ["Estados Unidos", "Australia", "Turquía", "Paraguay"],
+    "E": ["Alemania", "Costa de Marfil", "Ecuador", "Curazao"],
+    "F": ["Suecia", "Japón", "Países Bajos", "Túnez"],
+    "G": ["Bélgica", "Egipto", "Irán", "Nueva Zelanda"],
+    "H": ["España", "Cabo Verde", "Arabia Saudita", "Uruguay"],
+    "I": ["Francia", "Senegal", "Irak", "Noruega"],
+    "J": ["Argentina", "Argelia", "Austria", "Jordania"],
+    "K": ["Portugal", "RD Congo", "Uzbekistán", "Colombia"],
+    "L": ["Inglaterra", "Croacia", "Ghana", "Panamá"],
 }
 
 REAL_RESULTS = [
-    {"team_a": "Mexico", "team_b": "South Africa", "score_a": 2, "score_b": 0, "stage": "group", "group": "A"},
-    {"team_a": "South Korea", "team_b": "Czech Republic", "score_a": 2, "score_b": 1, "stage": "group", "group": "A"},
-    {"team_a": "Canada", "team_b": "Bosnia and Herzegovina", "score_a": 1, "score_b": 1, "stage": "group", "group": "B"},
-    {"team_a": "Qatar", "team_b": "Switzerland", "score_a": 1, "score_b": 1, "stage": "group", "group": "B"},
-    {"team_a": "Brazil", "team_b": "Morocco", "score_a": 1, "score_b": 1, "stage": "group", "group": "C"},
-    {"team_a": "Haiti", "team_b": "Scotland", "score_a": 0, "score_b": 1, "stage": "group", "group": "C"},
-    {"team_a": "United States", "team_b": "Paraguay", "score_a": 4, "score_b": 1, "stage": "group", "group": "D"},
-    {"team_a": "Australia", "team_b": "Turkey", "score_a": 2, "score_b": 0, "stage": "group", "group": "D"},
-    {"team_a": "Germany", "team_b": "Curaçao", "score_a": 7, "score_b": 1, "stage": "group", "group": "E"},
-    {"team_a": "Ivory Coast", "team_b": "Ecuador", "score_a": 1, "score_b": 0, "stage": "group", "group": "E"},
-    {"team_a": "Netherlands", "team_b": "Japan", "score_a": 2, "score_b": 2, "stage": "group", "group": "F"},
-    {"team_a": "Sweden", "team_b": "Tunisia", "score_a": 5, "score_b": 1, "stage": "group", "group": "F"},
+    {"team_a": "México",          "team_b": "Sudáfrica",               "score_a": 2, "score_b": 0, "stage": "group", "group": "A"},
+    {"team_a": "Corea del Sur",   "team_b": "República Checa",         "score_a": 2, "score_b": 1, "stage": "group", "group": "A"},
+    {"team_a": "Canadá",          "team_b": "Bosnia y Herzegovina",    "score_a": 1, "score_b": 1, "stage": "group", "group": "B"},
+    {"team_a": "Catar",           "team_b": "Suiza",                   "score_a": 1, "score_b": 1, "stage": "group", "group": "B"},
+    {"team_a": "Brasil",          "team_b": "Marruecos",               "score_a": 1, "score_b": 1, "stage": "group", "group": "C"},
+    {"team_a": "Haití",           "team_b": "Escocia",                 "score_a": 0, "score_b": 1, "stage": "group", "group": "C"},
+    {"team_a": "Estados Unidos",  "team_b": "Paraguay",                "score_a": 4, "score_b": 1, "stage": "group", "group": "D"},
+    {"team_a": "Australia",       "team_b": "Turquía",                 "score_a": 2, "score_b": 0, "stage": "group", "group": "D"},
+    {"team_a": "Alemania",        "team_b": "Curazao",                 "score_a": 7, "score_b": 1, "stage": "group", "group": "E"},
+    {"team_a": "Costa de Marfil", "team_b": "Ecuador",                 "score_a": 1, "score_b": 0, "stage": "group", "group": "E"},
+    {"team_a": "Países Bajos",    "team_b": "Japón",                   "score_a": 2, "score_b": 2, "stage": "group", "group": "F"},
+    {"team_a": "Suecia",          "team_b": "Túnez",                   "score_a": 5, "score_b": 1, "stage": "group", "group": "F"},
 ]
 
 FLAG_MAP = {
-    "mexico": "🇲🇽", "united_states": "🇺🇸", "canada": "🇨🇦",
-    "argentina": "🇦🇷", "brazil": "🇧🇷", "uruguay": "🇺🇾",
+    "mexico": "🇲🇽", "estados_unidos": "🇺🇸", "canada": "🇨🇦",
+    "argentina": "🇦🇷", "brasil": "🇧🇷", "uruguay": "🇺🇾",
     "colombia": "🇨🇴", "ecuador": "🇪🇨", "paraguay": "🇵🇾",
-    "england": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "france": "🇫🇷", "germany": "🇩🇪",
-    "spain": "🇪🇸", "italy": "🇮🇹", "netherlands": "🇳🇱",
-    "portugal": "🇵🇹", "belgium": "🇧🇪", "croatia": "🇭🇷",
-    "switzerland": "🇨🇭", "sweden": "🇸🇪", "norway": "🇳🇴",
-    "turkey": "🇹🇷", "scotland": "🏴󠁧󠁢󠁳󠁣󠁴󠁿", "austria": "🇦🇹",
-    "czech_republic": "🇨🇿", "bosnia_and_herzegovina": "🇧🇦",
-    "japan": "🇯🇵", "south_korea": "🇰🇷", "iran": "🇮🇷",
-    "saudi_arabia": "🇸🇦", "australia": "🇦🇺", "qatar": "🇶🇦",
-    "uzbekistan": "🇺🇿", "iraq": "🇮🇶", "jordan": "🇯🇴",
-    "morocco": "🇲🇦", "senegal": "🇸🇳", "tunisia": "🇹🇳",
-    "algeria": "🇩🇿", "egypt": "🇪🇬", "ghana": "🇬🇭",
-    "ivory_coast": "🇨🇮", "south_africa": "🇿🇦",
-    "cape_verde": "🇨🇻", "dr_congo": "🇨🇩",
+    "inglaterra": "🏴󠁧󠁢󠁥󠁮󠁧󠁿", "francia": "🇫🇷", "alemania": "🇩🇪",
+    "espana": "🇪🇸", "paises_bajos": "🇳🇱", "portugal": "🇵🇹",
+    "belgica": "🇧🇪", "croacia": "🇭🇷", "suiza": "🇨🇭",
+    "suecia": "🇸🇪", "noruega": "🇳🇴", "turquia": "🇹🇷",
+    "escocia": "🏴󠁧󠁢󠁳󠁣󠁴󠁿", "austria": "🇦🇹",
+    "republica_checa": "🇨🇿", "bosnia_y_herzegovina": "🇧🇦",
+    "japon": "🇯🇵", "corea_del_sur": "🇰🇷", "iran": "🇮🇷",
+    "arabia_saudita": "🇸🇦", "australia": "🇦🇺", "catar": "🇶🇦",
+    "uzbekistan": "🇺🇿", "irak": "🇮🇶", "jordania": "🇯🇴",
+    "marruecos": "🇲🇦", "senegal": "🇸🇳", "tunez": "🇹🇳",
+    "argelia": "🇩🇿", "egipto": "🇪🇬", "ghana": "🇬🇭",
+    "costa_de_marfil": "🇨🇮", "sudafrica": "🇿🇦",
+    "cabo_verde": "🇨🇻", "rd_congo": "🇨🇩",
     "costa_rica": "🇨🇷", "panama": "🇵🇦", "haiti": "🇭🇹",
-    "curaçao": "🇨🇼", "jamaica": "🇯🇲", "new_zealand": "🇳🇿",
+    "curazao": "🇨🇼", "jamaica": "🇯🇲", "nueva_zelanda": "🇳🇿",
+    "dinamarca": "🇩🇰", "serbia": "🇷🇸", "polonia": "🇵🇱",
+    "italia": "🇮🇹", "nigeria": "🇳🇬", "camerun": "🇨🇲",
+    "chile": "🇨🇱", "peru": "🇵🇪", "venezuela": "🇻🇪",
+    "bolivia": "🇧🇴", "honduras": "🇭🇳", "china": "🇨🇳",
+    "mali": "🇲🇱", "grecia": "🇬🇷", "ucrania": "🇺🇦",
+    "hungria": "🇭🇺", "rumania": "🇷🇴", "eslovaquia": "🇸🇰",
 }
 
 ELO_REAL = {
-    "argentina": 2135, "france": 2108, "spain": 2080, "england": 2055,
-    "brazil": 2040, "netherlands": 2020, "portugal": 2005, "germany": 1990,
-    "belgium": 1970, "croatia": 1965, "uruguay": 1955, "colombia": 1940,
-    "mexico": 1845, "united_states": 1850, "canada": 1800,
-    "switzerland": 1905, "austria": 1890, "sweden": 1840, "norway": 1880,
-    "turkey": 1860, "scotland": 1830, "czech_republic": 1805,
-    "bosnia_and_herzegovina": 1750, "denmark": 1915, "poland": 1830,
-    "serbia": 1865,
-    "morocco": 1885, "japan": 1880, "senegal": 1870,
-    "south_korea": 1835, "iran": 1855, "saudi_arabia": 1770,
-    "australia": 1815, "qatar": 1765, "uzbekistan": 1735,
-    "iraq": 1745, "jordan": 1720,
-    "egypt": 1825, "algeria": 1810, "tunisia": 1795,
-    "nigeria": 1820, "cameroon": 1785, "ghana": 1835,
-    "ivory_coast": 1860, "south_africa": 1755,
-    "cape_verde": 1710, "dr_congo": 1740,
+    "argentina": 2135, "francia": 2108, "espana": 2080, "inglaterra": 2055,
+    "brasil": 2040, "paises_bajos": 2020, "portugal": 2005, "alemania": 1990,
+    "belgica": 1970, "croacia": 1965, "uruguay": 1955, "colombia": 1940,
+    "mexico": 1845, "estados_unidos": 1850, "canada": 1800,
+    "suiza": 1905, "austria": 1890, "suecia": 1840, "noruega": 1880,
+    "turquia": 1860, "escocia": 1830, "republica_checa": 1805,
+    "bosnia_y_herzegovina": 1750, "dinamarca": 1915, "polonia": 1830,
+    "serbia": 1865, "marruecos": 1885, "japon": 1880, "senegal": 1870,
+    "corea_del_sur": 1835, "iran": 1855, "arabia_saudita": 1770,
+    "australia": 1815, "catar": 1765, "uzbekistan": 1735,
+    "irak": 1745, "jordania": 1720,
+    "egipto": 1825, "argelia": 1810, "tunez": 1795,
+    "nigeria": 1820, "camerun": 1785, "ghana": 1835,
+    "costa_de_marfil": 1860, "sudafrica": 1755,
+    "cabo_verde": 1710, "rd_congo": 1740,
     "ecuador": 1780, "chile": 1805, "paraguay": 1790,
     "costa_rica": 1775, "panama": 1725, "honduras": 1730,
-    "jamaica": 1760, "haiti": 1680, "curaçao": 1670,
-    "new_zealand": 1720,
+    "jamaica": 1760, "haiti": 1680, "curazao": 1670,
+    "nueva_zelanda": 1720,
     "china": 1740, "mali": 1750,
 }
 
@@ -92,7 +106,7 @@ def build_teams():
     teams = []
     for gid, team_names in REAL_GROUPS.items():
         for name in team_names:
-            tid = name.lower().replace(" ", "_")
+            tid = make_id(name)
             teams.append({
                 "id": tid,
                 "name": name,
@@ -113,9 +127,9 @@ def build_groups():
 
 def build_results():
     results = []
-    for i, r in enumerate(REAL_RESULTS):
+    for r in REAL_RESULTS:
         results.append({
-            "id": f"res_{r['team_a'].lower().replace(' ','_')}_{r['team_b'].lower().replace(' ','_')}",
+            "id": f"res_{make_id(r['team_a'])}_{make_id(r['team_b'])}",
             "team_a": r["team_a"],
             "team_b": r["team_b"],
             "score_a": r["score_a"],
@@ -132,13 +146,13 @@ def build_elo_ratings():
     ratings = {}
     for gid, team_names in REAL_GROUPS.items():
         for name in team_names:
-            tid = name.lower().replace(" ", "_")
+            tid = make_id(name)
             ratings[tid] = ELO_REAL.get(tid, 1500)
 
     from models.elo import update_elo
     for r in REAL_RESULTS:
-        tid_a = r["team_a"].lower().replace(" ", "_")
-        tid_b = r["team_b"].lower().replace(" ", "_")
+        tid_a = make_id(r["team_a"])
+        tid_b = make_id(r["team_b"])
         try:
             update_elo(tid_a, tid_b, r["score_a"], r["score_b"], match_type="world_cup")
         except Exception:
@@ -154,10 +168,9 @@ def build_fixtures():
 
 
 if __name__ == "__main__":
-    import sys
     force = "--force" in sys.argv
 
-    print("⚽ Aplicando datos REALES del Mundial 2026...")
+    print("⚽ Aplicando datos del Mundial 2026 (español)...")
 
     teams = build_teams()
     save_json("teams.json", teams)
@@ -177,7 +190,6 @@ if __name__ == "__main__":
 
     existing_elo = load_json("elo_ratings.json") or {}
     if force or not existing_elo.get("ratings"):
-        print("  Calculando Elo con resultados reales...")
         elo_ratings = build_elo_ratings()
         save_json("elo_ratings.json", elo_ratings)
         print(f"  ✅ elo_ratings.json: {len(elo_ratings['ratings'])} ratings")
@@ -197,14 +209,14 @@ if __name__ == "__main__":
         print(f"  ⏭️  bias_state.json: {existing_bias.get('total_tracked',0)} tracked (preservado)")
 
     print()
-    print("=== Grupos Reales ===")
+    print("=== Grupos (español) ===")
     for gid, names in REAL_GROUPS.items():
         print(f"  Grupo {gid}: {' | '.join(names)}")
 
     print()
-    print("=== Resultados Reales (12 partidos jugados) ===")
+    print("=== Resultados (español) ===")
     for r in REAL_RESULTS:
-        print(f"  {r['team_a']} {r['score_a']}-{r['score_b']} {r['team_b']} (Grupo {r['group']})")
+        print(f"  {r['team_a']} {r['score_a']}-{r['score_b']} {r['team_b']}")
 
     print()
-    print("✅ Datos reales aplicados. Reinicia el backend para usar los nuevos datos.")
+    print("✅ Datos en español aplicados.")

@@ -13,7 +13,7 @@ import httpx
 import re
 import json
 from fastapi import APIRouter
-from utils.data_loader import load_json, save_json
+from utils.data_loader import load_json, save_json, name_to_id
 
 router = APIRouter(prefix="/api/admin", tags=["updater"])
 
@@ -79,8 +79,8 @@ def fetch_latest_results():
 
         from models.elo import update_elo
         for r in new_results:
-            tid_a = r["team_a"].lower().replace(" ", "_")
-            tid_b = r["team_b"].lower().replace(" ", "_")
+            tid_a = name_to_id(r["team_a"])
+            tid_b = name_to_id(r["team_b"])
             try:
                 update_elo(tid_a, tid_b, r["score_a"], r["score_b"], match_type="world_cup")
             except Exception:

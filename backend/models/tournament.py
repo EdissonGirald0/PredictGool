@@ -17,7 +17,7 @@ import numpy as np
 from config import MONTE_CARLO_DEFAULT_SIMULATIONS
 from models.ensemble import predict_ensemble
 from models.dixon_coles import sample_match_result as sample_fast
-from utils.data_loader import load_json
+from utils.data_loader import load_json, name_to_id
 
 
 def _load_teams() -> list[dict]:
@@ -45,7 +45,7 @@ def _get_team_name(team_id: str, teams: list[dict]) -> str:
 
 def _team_id_from_name(name: str, teams: list[dict]) -> Optional[str]:
     """Busca team_id a partir del nombre (case-insensitive)."""
-    name_lower = name.lower().replace(" ", "_")
+    name_lower = name_to_id(name)
     for t in teams:
         if t["id"] == name_lower:
             return t["id"]

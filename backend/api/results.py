@@ -3,7 +3,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from utils.data_loader import load_json, save_json
+from utils.data_loader import load_json, save_json, name_to_id
 
 router = APIRouter(prefix="/api/results", tags=["results"])
 
@@ -52,8 +52,8 @@ def add_result(req: ResultRequest):
     save_json("results.json", results)
 
     from models.elo import update_elo
-    tid_a = req.team_a.lower().replace(" ", "_")
-    tid_b = req.team_b.lower().replace(" ", "_")
+    tid_a = name_to_id(req.team_a)
+    tid_b = name_to_id(req.team_b)
     try:
         update_elo(tid_a, tid_b, req.score_a, req.score_b, match_type="world_cup")
     except Exception:

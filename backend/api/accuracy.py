@@ -4,7 +4,7 @@ Endpoints de accuracy: comparativa de predicciones vs resultados reales.
 
 from fastapi import APIRouter
 
-from utils.data_loader import load_json
+from utils.data_loader import load_json, name_to_id
 from models.ensemble import predict_ensemble
 
 router = APIRouter(prefix="/api/accuracy", tags=["accuracy"])
@@ -24,8 +24,8 @@ def get_accuracy():
     for r in results:
         if not r.get("played"):
             continue
-        tid_a = r["team_a"].lower().replace(" ", "_")
-        tid_b = r["team_b"].lower().replace(" ", "_")
+        tid_a = name_to_id(r["team_a"])
+        tid_b = name_to_id(r["team_b"])
 
         try:
             pred = predict_ensemble(tid_a, tid_b)

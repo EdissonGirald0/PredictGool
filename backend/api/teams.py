@@ -3,7 +3,7 @@
 from fastapi import APIRouter, HTTPException
 
 from models.elo import get_elo, get_all_elos
-from utils.data_loader import load_json
+from utils.data_loader import load_json, name_to_id
 
 router = APIRouter(prefix="/api", tags=["teams"])
 
@@ -38,7 +38,7 @@ def get_groups():
     for g in groups:
         group_teams = []
         for t_name in g["teams"]:
-            tid = t_name.lower().replace(" ", "_")
+            tid = name_to_id(t_name)
             t_data = next((t for t in teams if t["id"] == tid), None)
             group_teams.append({
                 "id": tid,

@@ -3,39 +3,39 @@
     "id": "A",
     "name": "Grupo A",
     "teams": [
-      "Mexico",
-      "South Korea",
-      "Czech Republic",
-      "South Africa"
+      "México",
+      "Corea del Sur",
+      "República Checa",
+      "Sudáfrica"
     ]
   },
   {
     "id": "B",
     "name": "Grupo B",
     "teams": [
-      "Switzerland",
-      "Canada",
-      "Qatar",
-      "Bosnia and Herzegovina"
+      "Suiza",
+      "Canadá",
+      "Catar",
+      "Bosnia y Herzegovina"
     ]
   },
   {
     "id": "C",
     "name": "Grupo C",
     "teams": [
-      "Scotland",
-      "Morocco",
-      "Brazil",
-      "Haiti"
+      "Escocia",
+      "Marruecos",
+      "Brasil",
+      "Haití"
     ]
   },
   {
     "id": "D",
     "name": "Grupo D",
     "teams": [
-      "United States",
+      "Estados Unidos",
       "Australia",
-      "Turkey",
+      "Turquía",
       "Paraguay"
     ]
   },
@@ -43,39 +43,39 @@
     "id": "E",
     "name": "Grupo E",
     "teams": [
-      "Germany",
-      "Ivory Coast",
+      "Alemania",
+      "Costa de Marfil",
       "Ecuador",
-      "Curaçao"
+      "Curazao"
     ]
   },
   {
     "id": "F",
     "name": "Grupo F",
     "teams": [
-      "Sweden",
-      "Japan",
-      "Netherlands",
-      "Tunisia"
+      "Suecia",
+      "Japón",
+      "Países Bajos",
+      "Túnez"
     ]
   },
   {
     "id": "G",
     "name": "Grupo G",
     "teams": [
-      "Belgium",
-      "Egypt",
-      "Iran",
-      "New Zealand"
+      "Bélgica",
+      "Egipto",
+      "Irán",
+      "Nueva Zelanda"
     ]
   },
   {
     "id": "H",
     "name": "Grupo H",
     "teams": [
-      "Spain",
-      "Cape Verde",
-      "Saudi Arabia",
+      "España",
+      "Cabo Verde",
+      "Arabia Saudita",
       "Uruguay"
     ]
   },
@@ -83,10 +83,10 @@
     "id": "I",
     "name": "Grupo I",
     "teams": [
-      "France",
+      "Francia",
       "Senegal",
-      "Iraq",
-      "Norway"
+      "Irak",
+      "Noruega"
     ]
   },
   {
@@ -94,9 +94,9 @@
     "name": "Grupo J",
     "teams": [
       "Argentina",
-      "Algeria",
+      "Argelia",
       "Austria",
-      "Jordan"
+      "Jordania"
     ]
   },
   {
@@ -104,8 +104,8 @@
     "name": "Grupo K",
     "teams": [
       "Portugal",
-      "DR Congo",
-      "Uzbekistan",
+      "RD Congo",
+      "Uzbekistán",
       "Colombia"
     ]
   },
@@ -113,10 +113,10 @@
     "id": "L",
     "name": "Grupo L",
     "teams": [
-      "England",
-      "Croatia",
+      "Inglaterra",
+      "Croacia",
       "Ghana",
-      "Panama"
+      "Panamá"
     ]
   }
 ]

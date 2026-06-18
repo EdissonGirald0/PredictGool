@@ -7,7 +7,7 @@ Reglas FIFA Art. 11.5:
 Top 2 de cada grupo + 8 mejores terceros avanzan a R32.
 """
 
-from utils.data_loader import load_json
+from utils.data_loader import load_json, name_to_id
 
 
 def calculate_standings() -> dict:
@@ -70,7 +70,7 @@ def calculate_standings() -> dict:
         tid_map = {t["name"]: t["id"] for t in teams}
         standings[gid] = [
             {
-                "team_id": tid_map.get(tn, tn.lower().replace(" ", "_")),
+                "team_id": tid_map.get(tn, name_to_id(tn)),
                 "team_name": stats[tn]["team_name"],
                 "pts": stats[tn]["pts"],
                 "played": stats[tn]["played"],
