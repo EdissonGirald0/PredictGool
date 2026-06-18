@@ -27,11 +27,15 @@ WORKDIR /app
 COPY backend/ ./backend/
 COPY --from=frontend-builder /app/frontend/dist /app/frontend/dist
 
-RUN mkdir -p /app/backend/data/models
+RUN mkdir -p /app/backend/data /app/backend/data/models
 
 ENV HOST=0.0.0.0
 ENV PORT=8000
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "cd /app/backend && python run_scrapers.py 2>/dev/null; exec uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+CMD ["sh", "-c", "\
+  cd /app/backend && \
+  python run_scrapers.py 2>/dev/null || true && \
+  exec uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} \
+"]

@@ -6,7 +6,7 @@ Actualiza: teams.json, groups.json, results.json, elo_ratings.json, fixtures.jso
 
 import json, sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from utils.data_loader import save_json
+from utils.data_loader import save_json, load_json
 
 # ============================================================
 # DATOS REALES DEL MUNDIAL 2026 (Wikipedia, 15 Jun 2026)
@@ -154,6 +154,9 @@ def build_fixtures():
 
 
 if __name__ == "__main__":
+    import sys
+    force = "--force" in sys.argv
+
     print("⚽ Aplicando datos REALES del Mundial 2026...")
 
     teams = build_teams()
@@ -164,18 +167,34 @@ if __name__ == "__main__":
     save_json("groups.json", groups)
     print(f"  ✅ groups.json: {len(groups)} grupos")
 
-    results = build_results()
-    save_json("results.json", results)
-    print(f"  ✅ results.json: {len(results)} resultados")
+    existing_results = load_json("results.json") or []
+    if force or len(existing_results) == 0:
+        results = build_results()
+        save_json("results.json", results)
+        print(f"  ✅ results.json: {len(results)} resultados (inicial)")
+    else:
+        print(f"  ⏭️  results.json: {len(existing_results)} resultados (preservados)")
 
-    print("  Calculando Elo con resultados reales...")
-    elo_ratings = build_elo_ratings()
-    save_json("elo_ratings.json", elo_ratings)
-    print(f"  ✅ elo_ratings.json: {len(elo_ratings['ratings'])} ratings")
+    existing_elo = load_json("elo_ratings.json") or {}
+    if force or not existing_elo.get("ratings"):
+        print("  Calculando Elo con resultados reales...")
+        elo_ratings = build_elo_ratings()
+        save_json("elo_ratings.json", elo_ratings)
+        print(f"  ✅ elo_ratings.json: {len(elo_ratings['ratings'])} ratings")
+    else:
+        print(f"  ⏭️  elo_ratings.json: {len(existing_elo.get('ratings',{}))} ratings (preservados)")
 
     fixtures = build_fixtures()
     save_json("fixtures.json", fixtures)
     print(f"  ✅ fixtures.json: {len(fixtures)} partidos")
+
+    existing_bias = load_json("bias_state.json") or {}
+    if force or existing_bias.get("total_tracked", 0) == 0:
+        from models.bias import recalibrate_from_results
+        print("  Inicializando sistema de sesgo...")
+        recalibrate_from_results()
+    else:
+        print(f"  ⏭️  bias_state.json: {existing_bias.get('total_tracked',0)} tracked (preservado)")
 
     print()
     print("=== Grupos Reales ===")
