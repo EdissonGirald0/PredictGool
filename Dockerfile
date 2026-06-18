@@ -36,6 +36,16 @@ EXPOSE 8000
 
 CMD ["sh", "-c", "\
   cd /app/backend && \
-  python run_scrapers.py 2>/dev/null || true && \
+  if [ -f data/teams.json ]; then \
+    if python3 -c \"import json; t=json.load(open('data/teams.json')); exit(0 if any(x['name']=='México' for x in t) else 1)\" 2>/dev/null; then \
+      echo '✅ Datos en español detectados, preservando...'; \
+      python run_scrapers.py 2>/dev/null || true; \
+    else \
+      echo '⚠️  Datos antiguos (inglés), regenerando...'; \
+      python apply_real_data.py --force 2>/dev/null || true; \
+    fi; \
+  else \
+    python apply_real_data.py --force 2>/dev/null || true; \
+  fi && \
   exec uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} \
 "]
