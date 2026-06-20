@@ -41,8 +41,9 @@ export const useResultsStore = defineStore('results', () => {
       if (resp.status === 'ok') {
         await fetchResults()
       } else {
-        error.value = resp.detail || 'Error al guardar'
-        throw new Error(error.value)
+        const msg = resp.detail || 'Error al guardar'
+        error.value = msg
+        throw new Error(msg)
       }
     } catch (e: any) {
       if (e.message) error.value = e.message
