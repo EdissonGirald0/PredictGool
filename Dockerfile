@@ -9,7 +9,6 @@ RUN npm run build
 FROM python:3.13-slim AS runtime
 ENV PYTHONUNBUFFERED=1
 
-# Build timestamp: 2026-06-15-v3-force-rebuild
 RUN pip install --no-cache-dir \
     fastapi==0.115.6 \
     "uvicorn[standard]==0.34.0" \
@@ -22,7 +21,6 @@ RUN pip install --no-cache-dir \
     bcrypt==4.0.1
 
 WORKDIR /app
-
 COPY backend/ ./backend/
 COPY --from=frontend-builder /app/frontend/dist /app/frontend/dist
 
@@ -36,10 +34,10 @@ CMD ["sh", "-c", "\
   cd /app/backend && \
   if [ -f data/teams.json ]; then \
     if python3 -c \"import json; t=json.load(open('data/teams.json')); exit(0 if any(x['name']=='México' for x in t) else 1)\" 2>/dev/null; then \
-      echo '✅ Datos en español detectados, preservando...'; \
+      echo '✅ Datos en español, preservando...'; \
       python run_scrapers.py 2>/dev/null || true; \
     else \
-      echo '⚠️  Datos antiguos, regenerando...'; \
+      echo '⚠️  Regenerando datos en español...'; \
       python apply_real_data.py --force 2>/dev/null || true; \
     fi; \
   else \
