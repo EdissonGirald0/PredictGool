@@ -27,6 +27,10 @@ WORKDIR /app
 COPY backend/ ./backend/
 COPY --from=frontend-builder /app/frontend/dist /app/frontend/dist
 
+# Force rebuild of API layer (bust Docker cache)
+COPY backend/api/results.py /app/backend/api/results.py
+COPY backend/api/updater.py /app/backend/api/updater.py
+
 RUN mkdir -p /app/backend/data /app/backend/data/models
 
 ENV HOST=0.0.0.0
