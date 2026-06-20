@@ -145,22 +145,26 @@ async function submitResult() {
   if (!canSubmit.value) return
   const teamAData = teams.value.find(t => t.id === newResult.team_a)
   const teamBData = teams.value.find(t => t.id === newResult.team_b)
-  await resultsStore.addResult({
-    team_a: teamAData?.name || newResult.team_a,
-    team_b: teamBData?.name || newResult.team_b,
-    score_a: newResult.score_a!,
-    score_b: newResult.score_b!,
-    stage: 'group',
-    group: teamAData?.group || null,
-    date: new Date().toISOString().slice(0, 10),
-  })
-  newResult.team_a = ''
-  newResult.team_b = ''
-  newResult.score_a = null
-  newResult.score_b = null
-  notif.value?.show('Resultado registrado. Grupos, Bracket y Sesgo actualizados.', 'success')
-  await loadBiasStatus()
-  await dataStore.refreshAll()
+  try {
+    await resultsStore.addResult({
+      team_a: teamAData?.name || newResult.team_a,
+      team_b: teamBData?.name || newResult.team_b,
+      score_a: newResult.score_a!,
+      score_b: newResult.score_b!,
+      stage: 'group',
+      group: teamAData?.group || null,
+      date: new Date().toISOString().slice(0, 10),
+    })
+    newResult.team_a = ''
+    newResult.team_b = ''
+    newResult.score_a = null
+    newResult.score_b = null
+    notif.value?.show('Resultado registrado. Grupos, Bracket y Sesgo actualizados.', 'success')
+    await loadBiasStatus()
+    await dataStore.refreshAll()
+  } catch (e: any) {
+    notif.value?.show('Error: ' + (resultsStore.error || e.message || 'Desconocido'), 'warning')
+  }
 }
 
 async function fetchNewResults() {

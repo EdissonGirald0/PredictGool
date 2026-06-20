@@ -35,11 +35,18 @@ export const useResultsStore = defineStore('results', () => {
 
   async function addResult(result: Omit<MatchResult, 'id' | 'played'>) {
     loading.value = true
+    error.value = null
     try {
-      await api.post('/results', result)
-      await fetchResults()
+      const resp = await api.post<any>('/results', result)
+      if (resp.status === 'ok') {
+        await fetchResults()
+      } else {
+        error.value = resp.detail || 'Error al guardar'
+        throw new Error(error.value)
+      }
     } catch (e: any) {
-      error.value = e.message
+      if (e.message) error.value = e.message
+      throw e
     } finally {
       loading.value = false
     }
