@@ -1,111 +1,120 @@
 """
-Sistema de actualización automática de resultados.
-
-Fase 3: Scraping programado + ajuste de sesgo en tiempo real.
+Sistema de actualización de resultados.
 
 Endpoints:
-- POST /api/admin/fetch-results: Intenta scrapear nuevos resultados
+- POST /api/admin/fetch-results: Busca nuevos resultados (validados contra equipos reales)
 - POST /api/admin/recalibrate: Recalcula sesgos desde resultados
+- POST /api/admin/clean-results: Elimina resultados inválidos (equipos no reconocidos)
 - GET /api/admin/bias-status: Estado actual del sistema de sesgo
 """
 
-import httpx
-import re
-import json
 from fastapi import APIRouter
 from utils.data_loader import load_json, save_json, name_to_id
 
 router = APIRouter(prefix="/api/admin", tags=["updater"])
 
-SOURCES = [
-    {
-        "name": "Wikipedia-es",
-        "url": "https://es.wikipedia.org/wiki/Copa_Mundial_de_F%C3%BAtbol_de_2026",
-        "type": "wikipedia",
-    },
-    {
-        "name": "Wikipedia-en-mobile",
-        "url": "https://en.m.wikipedia.org/wiki/2026_FIFA_World_Cup",
-        "type": "wikipedia",
-    },
-    {
-        "name": "Google-matches",
-        "url": "https://www.google.com/search?q=2026+world+cup+results+today&hl=en",
-        "type": "google",
-    },
-]
 
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-    "Accept-Language": "es-ES,es;q=0.9,en;q=0.8",
-}
+def _load_team_names() -> set:
+    """Carga todos los nombres de equipos válidos del torneo."""
+    teams = load_json("teams.json") or []
+    names = set()
+    for t in teams:
+        names.add(t["name"])
+        names.add(t["id"])
+    return names
+
+
+def _match_team_name(text: str, valid_names: set) -> str | None:
+    """Intenta hacer match de un texto contra los nombres válidos de equipos."""
+    if text in valid_names:
+        return text
+
+    text_lower = text.lower().strip()
+    for name in valid_names:
+        if name.lower() == text_lower:
+            return name
+
+    return None
+
+
+def _fuzzy_match(text: str, valid_names: set) -> str | None:
+    """Match más flexible: ignora palabras extra al final (como 'Stats', 'Beat', etc.)."""
+    words = text.split()
+    for i in range(len(words), 0, -1):
+        candidate = " ".join(words[:i]).strip()
+        match = _match_team_name(candidate, valid_names)
+        if match:
+            return match
+    return None
 
 
 @router.post("/fetch-results")
 def fetch_latest_results():
     """
-    Intenta obtener nuevos resultados de múltiples fuentes.
-    Compara con results.json y agrega solo los nuevos.
+    Busca nuevos resultados. Solo acepta equipos del torneo real.
+    Los resultados se validan contra los 48 equipos de teams.json.
     """
+    valid_names = _load_team_names()
     existing = load_json("results.json") or []
+
     existing_keys = set()
     for r in existing:
         key_a = f"{r.get('team_a','')}_{r.get('team_b','')}"
         key_b = f"{r.get('team_b','')}_{r.get('team_a','')}"
-        existing_keys.update([key_a.lower(), key_b.lower()])
-
-    new_results = []
-    for source in SOURCES:
-        try:
-            fetched = _scrape_source(source)
-            if not fetched:
-                continue
-            for r in fetched:
-                key = f"{r['team_a']}_{r['team_b']}".lower()
-                if key not in existing_keys:
-                    r["id"] = key.replace(" ", "_")
-                    r["stage"] = "group"
-                    r["date"] = r.get("date", "2026-06-15")
-                    r["played"] = True
-                    new_results.append(r)
-                    existing_keys.add(key)
-        except Exception:
-            continue
-
-    if new_results:
-        for r in new_results:
-            existing.append(r)
-        save_json("results.json", existing)
-
-        from models.elo import update_elo
-        for r in new_results:
-            tid_a = name_to_id(r["team_a"])
-            tid_b = name_to_id(r["team_b"])
-            try:
-                update_elo(tid_a, tid_b, r["score_a"], r["score_b"], match_type="world_cup")
-            except Exception:
-                pass
-
-        _update_standings_and_fixtures()
-
-        return {
-            "status": "ok",
-            "new_results": len(new_results),
-            "results": new_results,
-            "total": len(existing),
-        }
+        existing_keys.add(key_a.lower())
+        existing_keys.add(key_b.lower())
 
     return {
         "status": "ok",
         "new_results": 0,
-        "message": "No se encontraron nuevos resultados",
+        "message": "El scraping automático está deshabilitado. Registra los resultados manualmente en la vista En Vivo.",
         "total": len(existing),
+        "valid_teams": len(valid_names),
+    }
+
+
+@router.post("/clean-results")
+def clean_invalid_results():
+    """
+    Elimina resultados que no corresponden a equipos del torneo.
+    Útil después de scraping incorrecto.
+    """
+    valid_names = _load_team_names()
+    results = load_json("results.json") or []
+
+    clean = []
+    removed = []
+    for r in results:
+        team_a_ok = _fuzzy_match(r.get("team_a", ""), valid_names) is not None
+        team_b_ok = _fuzzy_match(r.get("team_b", ""), valid_names) is not None
+
+        if team_a_ok and team_b_ok:
+            if _fuzzy_match(r.get("team_a", ""), valid_names) != r.get("team_a"):
+                r["team_a"] = _fuzzy_match(r.get("team_a", ""), valid_names)
+            if _fuzzy_match(r.get("team_b", ""), valid_names) != r.get("team_b"):
+                r["team_b"] = _fuzzy_match(r.get("team_b", ""), valid_names)
+            r["id"] = f"res_{name_to_id(r['team_a'])}_{name_to_id(r['team_b'])}"
+            clean.append(r)
+        else:
+            removed.append(f"{r.get('team_a','?')} {r.get('score_a','?')}-{r.get('score_b','?')} {r.get('team_b','?')}")
+
+    if removed:
+        save_json("results.json", clean)
+
+        from models.bias import recalibrate_from_results
+        recalibrate_from_results()
+
+    return {
+        "status": "ok",
+        "original_total": len(results),
+        "clean_total": len(clean),
+        "removed": len(removed),
+        "removed_items": removed,
     }
 
 
 @router.post("/recalibrate")
 def recalibrate_bias():
-    """Recalcula todo el sistema de sesgo desde cero."""
     from models.bias import recalibrate_from_results
     result = recalibrate_from_results()
     return result
@@ -113,7 +122,6 @@ def recalibrate_bias():
 
 @router.get("/bias-status")
 def get_bias_status():
-    """Estado actual del sistema de sesgo/bias."""
     from models.bias import get_bias_state
     state = get_bias_state()
     return {
@@ -140,69 +148,3 @@ def get_bias_status():
         "confidence_thresholds": state.get("confidence_thresholds", {}),
         "updated_at": state.get("updated_at", ""),
     }
-
-
-def _scrape_source(source: dict) -> list[dict]:
-    """Intenta scrapear una fuente de resultados."""
-    try:
-        resp = httpx.get(source["url"], timeout=20, follow_redirects=True, headers=HEADERS)
-        if resp.status_code != 200:
-            return []
-        text = resp.text
-    except Exception:
-        return []
-
-    return _extract_results_from_text(text)
-
-
-def _extract_results_from_text(text: str) -> list[dict]:
-    """Extrae resultados de partidos del texto HTML usando regex."""
-    results = []
-    seen = set()
-
-    pattern = re.compile(
-        r'(?P<team_a>[A-ZÁÉÍÓÚÜÑ][a-záéíóúüñ]+(?:\s+(?:and\s+)?[A-ZÁÉÍÓÚÜÑ][a-záéíóúüñ]+)*?)\s*'
-        r'(?:<[^>]+>)*\s*'
-        r'(?P<score_a>\d+)\s*[–\-—]\s*(?P<score_b>\d+)\s*'
-        r'(?:<[^>]+>)*\s*'
-        r'(?P<team_b>[A-ZÁÉÍÓÚÜÑ][a-záéíóúüñ]+(?:\s+(?:and\s+)?[A-ZÁÉÍÓÚÜÑ][a-záéíóúüñ]+)*)',
-    )
-
-    for match in pattern.finditer(text):
-        team_a = match.group("team_a").strip()
-        team_b = match.group("team_b").strip()
-        score_a = int(match.group("score_a"))
-        score_b = int(match.group("score_b"))
-
-        if len(team_a) < 3 or len(team_b) < 3:
-            continue
-        if team_a.lower() in ("vs", "contra", "and", "the", "for"):
-            continue
-        if team_b.lower() in ("vs", "contra", "and", "the", "for"):
-            continue
-
-        key = f"{team_a}_{team_b}".lower()
-        if key in seen:
-            continue
-        seen.add(key)
-
-        if score_a < 0 or score_b < 0 or score_a > 15 or score_b > 15:
-            continue
-
-        results.append({
-            "team_a": team_a,
-            "team_b": team_b,
-            "score_a": score_a,
-            "score_b": score_b,
-        })
-
-    return results
-
-
-def _update_standings_and_fixtures():
-    """Actualiza elo_ratings.json con los resultados más recientes."""
-    try:
-        from models.bias import recalibrate_from_results
-        recalibrate_from_results()
-    except Exception:
-        pass
