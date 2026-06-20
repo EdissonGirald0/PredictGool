@@ -24,12 +24,20 @@ RUN pip install --no-cache-dir \
     bcrypt==4.0.1
 
 WORKDIR /app
-COPY backend/ ./backend/
-COPY --from=frontend-builder /app/frontend/dist /app/frontend/dist
 
-# Force rebuild of API layer (bust Docker cache)
-COPY backend/api/results.py /app/backend/api/results.py
-COPY backend/api/updater.py /app/backend/api/updater.py
+# Copy backend in layers — ensures cache invalidation on any change
+COPY backend/requirements.txt ./backend/
+COPY backend/config.py ./backend/
+COPY backend/main.py ./backend/
+COPY backend/__init__.py ./backend/
+COPY backend/utils/ ./backend/utils/
+COPY backend/models/ ./backend/models/
+COPY backend/api/ ./backend/api/
+COPY backend/scrapers/ ./backend/scrapers/
+COPY backend/apply_real_data.py ./backend/
+COPY backend/run_scrapers.py ./backend/
+
+COPY --from=frontend-builder /app/frontend/dist /app/frontend/dist
 
 RUN mkdir -p /app/backend/data /app/backend/data/models
 
