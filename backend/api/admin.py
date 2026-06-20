@@ -58,6 +58,7 @@ def health_check():
 
     return {
         "status": "healthy",
+        "validation": "active-v4",
         "data": {
             "teams": len(teams),
             "groups": len(groups),

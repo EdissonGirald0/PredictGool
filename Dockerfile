@@ -9,9 +9,7 @@ RUN npm run build
 FROM python:3.13-slim AS runtime
 ENV PYTHONUNBUFFERED=1
 
-ARG CACHEBUST=1
-RUN echo "Build cache bust: ${CACHEBUST}"
-
+# Build timestamp: 2026-06-15-v3-force-rebuild
 RUN pip install --no-cache-dir \
     fastapi==0.115.6 \
     "uvicorn[standard]==0.34.0" \
