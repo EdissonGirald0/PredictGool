@@ -112,3 +112,4 @@ def get_results_stats():
         "away_wins": sum(1 for r in results if r["score_b"] > r["score_a"]),
         "results": results,
     }
+
