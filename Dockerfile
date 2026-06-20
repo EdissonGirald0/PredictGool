@@ -1,7 +1,4 @@
 # PredictGool — Dockerfile multi-stage para Railway
-# Stage 1: Build frontend (Node.js)
-# Stage 2: Runtime (Python + built frontend)
-
 FROM node:22-slim AS frontend-builder
 WORKDIR /app/frontend
 COPY frontend/package*.json ./
@@ -11,6 +8,9 @@ RUN npm run build
 
 FROM python:3.13-slim AS runtime
 ENV PYTHONUNBUFFERED=1
+
+ARG CACHEBUST=1
+RUN echo "Build cache bust: ${CACHEBUST}"
 
 RUN pip install --no-cache-dir \
     fastapi==0.115.6 \
@@ -25,25 +25,13 @@ RUN pip install --no-cache-dir \
 
 WORKDIR /app
 
-# Copy backend in layers — ensures cache invalidation on any change
-COPY backend/requirements.txt ./backend/
-COPY backend/config.py ./backend/
-COPY backend/main.py ./backend/
-COPY backend/__init__.py ./backend/
-COPY backend/utils/ ./backend/utils/
-COPY backend/models/ ./backend/models/
-COPY backend/api/ ./backend/api/
-COPY backend/scrapers/ ./backend/scrapers/
-COPY backend/apply_real_data.py ./backend/
-COPY backend/run_scrapers.py ./backend/
-
+COPY backend/ ./backend/
 COPY --from=frontend-builder /app/frontend/dist /app/frontend/dist
 
 RUN mkdir -p /app/backend/data /app/backend/data/models
 
 ENV HOST=0.0.0.0
 ENV PORT=8000
-
 EXPOSE 8000
 
 CMD ["sh", "-c", "\
@@ -53,7 +41,7 @@ CMD ["sh", "-c", "\
       echo '✅ Datos en español detectados, preservando...'; \
       python run_scrapers.py 2>/dev/null || true; \
     else \
-      echo '⚠️  Datos antiguos (inglés), regenerando...'; \
+      echo '⚠️  Datos antiguos, regenerando...'; \
       python apply_real_data.py --force 2>/dev/null || true; \
     fi; \
   else \
